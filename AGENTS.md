@@ -335,7 +335,7 @@ function useInfinitePosts() {
 }
 ```
 
-Use with intersection observer for automatic loading:
+Example usage with intersection observer for automatic loading:
 
 ```tsx
 import { useInView } from 'react-intersection-observer';
