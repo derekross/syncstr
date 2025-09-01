@@ -315,7 +315,7 @@ function useInfinitePosts() {
   const { nostr } = useNostr();
 
   return useInfiniteQuery({
-    queryKey: ['posts', 'infinite'],
+    queryKey: ['global-feed'],
     queryFn: async ({ pageParam, signal }) => {
       const filter = { kinds: [1], limit: 20 };
       if (pageParam) filter.until = pageParam;
