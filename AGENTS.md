@@ -303,6 +303,70 @@ function usePosts() {
 }
 ```
 
+### Infinite Scroll for Feeds
+
+For feed-like interfaces, implement infinite scroll using TanStack Query's `useInfiniteQuery` with Nostr's timestamp-based pagination:
+
+```typescript
+import { useNostr } from '@nostrify/react';
+import { useInfiniteQuery } from '@tanstack/react-query';
+
+function useInfinitePosts() {
+  const { nostr } = useNostr();
+
+  return useInfiniteQuery({
+    queryKey: ['posts', 'infinite'],
+    queryFn: async ({ pageParam, signal }) => {
+      const filter = { kinds: [1], limit: 20 };
+      if (pageParam) filter.until = pageParam;
+
+      const events = await nostr.query([filter], {
+        signal: AbortSignal.any([signal, AbortSignal.timeout(1500)])
+      });
+
+      return events.sort((a, b) => b.created_at - a.created_at);
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length === 0) return undefined;
+      return lastPage[lastPage.length - 1].created_at;
+    },
+    initialPageParam: undefined,
+  });
+}
+```
+
+Use with intersection observer for automatic loading:
+
+```tsx
+import { useInView } from 'react-intersection-observer';
+
+function PostFeed() {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinitePosts();
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
+
+  const posts = data?.pages.flat() || [];
+
+  return (
+    <div className="space-y-4">
+      {posts.map((post) => (
+        <PostCard key={post.id} post={post} />
+      ))}
+      {hasNextPage && (
+        <div ref={ref} className="py-4">
+          {isFetchingNextPage && <Skeleton className="h-20 w-full" />}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
 #### Efficient Query Design
 
 **Critical**: Always minimize the number of separate queries to avoid rate limiting and improve performance. Combine related queries whenever possible.
