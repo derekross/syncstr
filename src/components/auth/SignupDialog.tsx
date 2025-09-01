@@ -2,7 +2,7 @@
 // It is important that all functionality in this file is preserved, and should only be modified if explicitly requested.
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Download, Key, UserPlus, FileText, Shield, User, Sparkles, LogIn, Lock, CheckCircle, Copy, Upload, Globe, FileSignature, Wand2 } from 'lucide-react';
+import { Download, Key, UserPlus, FileText, Shield, User, Sparkles, LogIn, Lock, CheckCircle, Upload, Globe, FileSignature, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -30,7 +30,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
   const [isLoading, setIsLoading] = useState(false);
   const [nsec, setNsec] = useState('');
   const [showSparkles, setShowSparkles] = useState(false);
-  const [keySecured, setKeySecured] = useState<'none' | 'copied' | 'downloaded'>('none');
+  const [keySecured, setKeySecured] = useState<'none' | 'downloaded'>('none');
   const [profileData, setProfileData] = useState({
     name: '',
     about: '',
@@ -80,7 +80,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
       const url = globalThis.URL.createObjectURL(blob);
 
       // Sanitize filename
-      const filename = sanitizeFilename('secret-key.txt');
+      const filename = sanitizeFilename('nostr-nsec-key.txt');
 
       // Create a temporary link element and trigger download
       const a = document.createElement('a');
@@ -110,14 +110,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
     }
   };
 
-  const copyKey = () => {
-    navigator.clipboard.writeText(nsec);
-    setKeySecured('copied');
-    toast({
-      title: 'Copied to clipboard!',
-      description: 'Key copied to clipboard.',
-    });
-  };
+
 
   const finishKeySetup = () => {
     try {
@@ -251,42 +244,29 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
   const getTitle = () => {
     if (step === 'welcome') return (
       <span className="flex items-center justify-center gap-2">
-        <UserPlus className="w-5 h-5 text-primary" />
         Create Your Account
       </span>
     );
     if (step === 'generate') return (
       <span className="flex items-center justify-center gap-2">
-        <Wand2 className="w-5 h-5 text-primary" />
         Generating Your Key
       </span>
     );
     if (step === 'download') return (
       <span className="flex items-center justify-center gap-2">
-        <Lock className="w-5 h-5 text-primary" />
         Secret Key
       </span>
     );
     if (step === 'profile') return (
       <span className="flex items-center justify-center gap-2">
-        <FileSignature className="w-5 h-5 text-primary" />
         Create Your Profile
       </span>
     );
     return (
       <span className="flex items-center justify-center gap-2">
-        <User className="w-5 h-5 text-primary" />
         Welcome!
       </span>
     );
-  };
-
-  const getDescription = () => {
-    if (step === 'welcome') return 'Ready to join the Nostr network?';
-    if (step === 'generate') return 'Creating your secret key to access Nostr.';
-
-    if (step === 'profile') return 'Tell others about yourself.';
-    return 'Your account is ready!';
   };
 
   // Reset state when dialog opens
@@ -320,9 +300,6 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
           <DialogTitle className={cn('font-semibold text-center text-lg')}>
             {getTitle()}
           </DialogTitle>
-          <DialogDescription className={cn(`text-muted-foreground text-center ${step === 'download' && 'hidden'}`)}>
-            {getDescription()}
-          </DialogDescription>
         </DialogHeader>
         <div className='px-6 pt-2 pb-4 space-y-4 overflow-y-scroll flex-1'>
           {/* Welcome Step - New engaging introduction */}
@@ -360,11 +337,6 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
               </div>
 
               <div className='space-y-3'>
-                <p className='text-muted-foreground px-5'>
-                  Join the Nostr network and take control of your social media experience.
-                  Your journey begins by generating a secret key.
-                </p>
-
                 <Button
                   className='w-full rounded-full py-6 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transform transition-all duration-200 hover:scale-105 shadow-lg'
                   onClick={() => setStep('generate')}
@@ -372,10 +344,6 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
                   <LogIn className='w-5 h-5 mr-2' />
                   Get Started
                 </Button>
-
-                <p className='text-xs text-muted-foreground'>
-                  Free forever • Decentralized • Your data, your control
-                </p>
               </div>
             </div>
           )}
@@ -533,7 +501,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
                                Download as File
                              </div>
                              <div className='text-xs text-muted-foreground'>
-                               Save as secret-key.txt file
+                               Save as nostr-nsec-key.txt file
                              </div>
                           </div>
                           {keySecured === 'downloaded' && (
@@ -546,67 +514,24 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
                     </CardContent>
                   </Card>
 
-                  {/* Copy Option */}
-                   <Card className={`cursor-pointer transition-all duration-200 ${
-                    keySecured === 'copied'
-                       ? 'ring-2 ring-green-500 bg-green-50 dark:bg-green-950/20'
-                       : 'hover:bg-primary/5 hover:border-primary/20'
-                   }`}>
-                    <CardContent className='p-3'>
-                      <Button
-                        variant="ghost"
-                        className='w-full h-auto p-0 justify-start hover:bg-transparent'
-                        onClick={copyKey}
-                      >
-                        <div className='flex items-center gap-3 w-full'>
-                          <div className={`p-1.5 rounded-lg ${
-                            keySecured === 'copied'
-                               ? 'bg-green-100 dark:bg-green-900'
-                               : 'bg-primary/10'
-                           }`}>
-                            {keySecured === 'copied' ? (
-                               <CheckCircle className='w-4 h-4 text-green-600' />
-                             ) : (
-                               <Copy className='w-4 h-4 text-primary' />
-                             )}
-                          </div>
-                          <div className='flex-1 text-left'>
-                             <div className='font-medium text-sm'>
-                               Copy to Clipboard
-                             </div>
-                             <div className='text-xs text-muted-foreground'>
-                               Save to password manager
-                            </div>
-                            <div className='text-[.7rem] text-muted-foreground'>
-                              {nsec.slice(0,16)}...
-                            </div>
-                          </div>
-                          {keySecured === 'copied' && (
-                             <div className='text-xs font-medium text-green-600'>
-                               ✓ Copied
-                             </div>
-                           )}
-                        </div>
-                      </Button>
-                    </CardContent>
-                  </Card>
+
                 </div>
 
                 {/* Continue button */}
                 <Button
                   className={`w-full rounded-full py-4 text-base font-semibold transform transition-all duration-200 shadow-lg ${
-                    keySecured !== 'none'
+                    keySecured === 'downloaded'
                       ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-950/50 dark:to-purple-950/50 hover:scale-105'
                       : 'bg-gradient-to-r from-blue-600/60 to-indigo-600/60 text-muted cursor-not-allowed'
                   }`}
                   onClick={finishKeySetup}
-                  disabled={keySecured === 'none'}
+                  disabled={keySecured !== 'downloaded'}
                 >
                   <LogIn className='w-4 h-4 mr-2 flex-shrink-0' />
                   <span className="text-center leading-tight">
                     {keySecured === 'none' ? (
                       <>
-                        Please secure your key first
+                        Please download your key first
                       </>
                     ) : (
                       <>
