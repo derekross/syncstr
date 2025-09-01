@@ -341,7 +341,7 @@ Example usage with intersection observer for automatic loading:
 import { useInView } from 'react-intersection-observer';
 
 function GlobalFeed() {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinitePosts();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useGlobalFeed();
   const { ref, inView } = useInView();
 
   useEffect(() => {
