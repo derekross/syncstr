@@ -80,7 +80,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
       const url = globalThis.URL.createObjectURL(blob);
 
       // Sanitize filename
-      const filename = sanitizeFilename('secret-key.txt');
+      const filename = sanitizeFilename('nostr-nsec-key.txt');
 
       // Create a temporary link element and trigger download
       const a = document.createElement('a');
@@ -501,7 +501,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
                                Download as File
                              </div>
                              <div className='text-xs text-muted-foreground'>
-                               Save as secret-key.txt file
+                               Save as nostr-nsec-key.txt file
                              </div>
                           </div>
                           {keySecured === 'downloaded' && (
