@@ -328,7 +328,7 @@ function useInfinitePosts() {
     },
     getNextPageParam: (lastPage) => {
       if (lastPage.length === 0) return undefined;
-      return lastPage[lastPage.length - 1].created_at;
+      return lastPage[lastPage.length - 1].created_at - 1; // Subtract 1 since 'until' is inclusive
     },
     initialPageParam: undefined,
   });
