@@ -244,42 +244,29 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
   const getTitle = () => {
     if (step === 'welcome') return (
       <span className="flex items-center justify-center gap-2">
-        <UserPlus className="w-5 h-5 text-primary" />
         Create Your Account
       </span>
     );
     if (step === 'generate') return (
       <span className="flex items-center justify-center gap-2">
-        <Wand2 className="w-5 h-5 text-primary" />
         Generating Your Key
       </span>
     );
     if (step === 'download') return (
       <span className="flex items-center justify-center gap-2">
-        <Lock className="w-5 h-5 text-primary" />
         Secret Key
       </span>
     );
     if (step === 'profile') return (
       <span className="flex items-center justify-center gap-2">
-        <FileSignature className="w-5 h-5 text-primary" />
         Create Your Profile
       </span>
     );
     return (
       <span className="flex items-center justify-center gap-2">
-        <User className="w-5 h-5 text-primary" />
         Welcome!
       </span>
     );
-  };
-
-  const getDescription = () => {
-    if (step === 'welcome') return 'Ready to join the Nostr network?';
-    if (step === 'generate') return 'Creating your secret key to access Nostr.';
-
-    if (step === 'profile') return 'Tell others about yourself.';
-    return 'Your account is ready!';
   };
 
   // Reset state when dialog opens
@@ -313,9 +300,6 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
           <DialogTitle className={cn('font-semibold text-center text-lg')}>
             {getTitle()}
           </DialogTitle>
-          <DialogDescription className={cn(`text-muted-foreground text-center ${step === 'download' && 'hidden'}`)}>
-            {getDescription()}
-          </DialogDescription>
         </DialogHeader>
         <div className='px-6 pt-2 pb-4 space-y-4 overflow-y-scroll flex-1'>
           {/* Welcome Step - New engaging introduction */}
@@ -353,11 +337,6 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
               </div>
 
               <div className='space-y-3'>
-                <p className='text-muted-foreground px-5'>
-                  Join the Nostr network and take control of your social media experience.
-                  Your journey begins by generating a secret key.
-                </p>
-
                 <Button
                   className='w-full rounded-full py-6 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transform transition-all duration-200 hover:scale-105 shadow-lg'
                   onClick={() => setStep('generate')}
@@ -365,10 +344,6 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose, onComplete
                   <LogIn className='w-5 h-5 mr-2' />
                   Get Started
                 </Button>
-
-                <p className='text-xs text-muted-foreground'>
-                  Free forever • Decentralized • Your data, your control
-                </p>
               </div>
             </div>
           )}
