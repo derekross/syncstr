@@ -324,7 +324,7 @@ function useInfinitePosts() {
         signal: AbortSignal.any([signal, AbortSignal.timeout(1500)])
       });
 
-      return events.sort((a, b) => b.created_at - a.created_at);
+      return events;
     },
     getNextPageParam: (lastPage) => {
       if (lastPage.length === 0) return undefined;
