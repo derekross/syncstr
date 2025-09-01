@@ -99,9 +99,9 @@ These components follow a consistent pattern using React's `forwardRef` and use 
 
 ## System Prompt Management
 
-The AI assistant's behavior and knowledge is defined by the CONTEXT.md file, which serves as the system prompt. To modify the assistant's instructions or add new project-specific guidelines:
+The AI assistant's behavior and knowledge is defined by the AGENTS.md file, which serves as the system prompt. To modify the assistant's instructions or add new project-specific guidelines:
 
-1. Edit CONTEXT.md directly
+1. Edit AGENTS.md directly
 2. The changes take effect in the next session
 
 ## "Vibed with MKStack"
