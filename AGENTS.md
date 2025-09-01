@@ -311,7 +311,7 @@ For feed-like interfaces, implement infinite scroll using TanStack Query's `useI
 import { useNostr } from '@nostrify/react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-function useInfinitePosts() {
+export function useGlobalFeed() {
   const { nostr } = useNostr();
 
   return useInfiniteQuery({
