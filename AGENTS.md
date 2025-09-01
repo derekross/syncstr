@@ -340,7 +340,7 @@ Example usage with intersection observer for automatic loading:
 ```tsx
 import { useInView } from 'react-intersection-observer';
 
-function PostFeed() {
+function GlobalFeed() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinitePosts();
   const { ref, inView } = useInView();
 
