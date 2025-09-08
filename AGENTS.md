@@ -1052,10 +1052,24 @@ describe('MyComponent', () => {
 });
 ```
 
-## Testing Your Changes
+## Validating Your Changes
 
-**CRITICAL**: Whenever you are finished modifying code, you must run the **test** script.
+**CRITICAL**: After making any code changes, you must validate your work by running available validation tools.
 
-**Your task is not considered finished until this test passes without errors.**
+**Your task is not considered finished until the code successfully type-checks and builds without errors.**
 
-**This requirement applies regardless of whether you wrote new tests or not.** The test script validates the entire codebase, including TypeScript compilation, ESLint rules, and existing test suite.
+### Validation Priority Order
+
+Run available tools in this priority order:
+
+1. **Type Checking** (Required): Ensure TypeScript compilation succeeds
+2. **Building/Compilation** (Required): Verify the project builds successfully
+3. **Linting** (Recommended): Check code style and catch potential issues
+4. **Tests** (If Available): Run existing test suite
+
+**Minimum Requirements:**
+- Code must type-check without errors
+- Code must build/compile successfully
+- Fix any critical linting errors that would break functionality
+
+The validation ensures code quality and catches errors before deployment, regardless of the development environment.
