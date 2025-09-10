@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ interface RelayInputProps {
   value: string;
   isConnected?: boolean;
   isLoading?: boolean;
+  onDisconnect?: () => void;
 }
 
 export function RelayInput({ 
@@ -23,9 +24,15 @@ export function RelayInput({
   onRelayChange, 
   value,
   isConnected,
-  isLoading 
+  isLoading,
+  onDisconnect 
 }: RelayInputProps) {
   const [inputValue, setInputValue] = useState(value);
+
+  // Sync local state with external value prop
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,9 +89,20 @@ export function RelayInput({
                 onChange={(e) => setInputValue(e.target.value)}
                 className="flex-1"
               />
-              <Button type="submit" disabled={!inputValue.trim() || isLoading}>
-                {isLoading ? 'Connecting...' : 'Connect'}
-              </Button>
+              {isConnected && onDisconnect ? (
+                <Button 
+                  type="button" 
+                  onClick={onDisconnect}
+                  variant="outline"
+                  disabled={isLoading}
+                >
+                  Disconnect
+                </Button>
+              ) : (
+                <Button type="submit" disabled={!inputValue.trim() || isLoading}>
+                  {isLoading ? 'Connecting...' : 'Connect'}
+                </Button>
+              )}
             </div>
           </div>
           {value && (

@@ -4,14 +4,17 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useProfileData } from '@/hooks/useProfileData';
 import { useSyncProfile } from '@/hooks/useSyncProfile';
 import { useRelayConnection } from '@/hooks/useRelayConnection';
+import { useBackupMode } from '@/hooks/useBackupMode';
 import { LoginArea } from '@/components/auth/LoginArea';
+import { BackupControls } from '@/components/BackupControls';
 import { RelayInput } from '@/components/RelayInput';
 import { ProfileDataCard } from '@/components/ProfileDataCard';
 import { SyncButton } from '@/components/SyncButton';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { RotateCcwIcon, UserIcon, InfoIcon, CheckCircleIcon, ZapIcon, ShieldIcon, GlobeIcon } from 'lucide-react';
+import { RotateCcwIcon, UserIcon, InfoIcon, CheckCircleIcon, ZapIcon, ShieldIcon, GlobeIcon, FileIcon } from 'lucide-react';
 import type { NostrEvent } from '@nostrify/nostrify';
 
 export function ProfileSync() {
@@ -19,14 +22,16 @@ export function ProfileSync() {
   const [sourceRelay, setSourceRelay] = useState('');
   const [targetRelay, setTargetRelay] = useState('');
   const [selectedEvents, setSelectedEvents] = useState<Set<string>>(new Set());
+  const [isManuallyDisconnected, setIsManuallyDisconnected] = useState(false);
   const { testConnection, getConnectionState } = useRelayConnection();
+  const { isBackupMode, backupData, backupSource, enterBackupMode, exitBackupMode } = useBackupMode();
 
   const {
     data: profileData,
     isLoading: isLoadingProfile,
     error: profileError,
     refetch: refetchProfile
-  } = useProfileData(user?.pubkey, sourceRelay);
+  } = useProfileData(user?.pubkey, sourceRelay, !isManuallyDisconnected);
 
   const {
     mutate: syncProfile,
@@ -37,6 +42,13 @@ export function ProfileSync() {
   // Reset selected events when source relay changes
   useEffect(() => {
     setSelectedEvents(new Set());
+  }, [sourceRelay]);
+
+  // Reset manually disconnected state when sourceRelay changes to a valid relay
+  useEffect(() => {
+    if (sourceRelay && sourceRelay.startsWith('wss://')) {
+      setIsManuallyDisconnected(false);
+    }
   }, [sourceRelay]);
 
   const handleSelectEvents = (events: NostrEvent[]) => {
@@ -58,10 +70,18 @@ export function ProfileSync() {
 
   const handleSourceRelayChange = (relay: string) => {
     setSourceRelay(relay);
+    setIsManuallyDisconnected(false); // Reset disconnect state when connecting to new relay
     // Trigger a refetch when the relay changes
     if (user?.pubkey) {
       refetchProfile();
     }
+  };
+
+  const handleSourceRelayDisconnect = () => {
+    // Set manually disconnected flag and clear state
+    setIsManuallyDisconnected(true);
+    setSourceRelay('');
+    setSelectedEvents(new Set());
   };
 
   const handleTargetRelayChange = async (relay: string) => {
@@ -72,8 +92,12 @@ export function ProfileSync() {
     }
   };
 
-  const selectedEventsArray = profileData
-    ? Object.values(profileData).filter(Boolean).filter(event => selectedEvents.has(event.id)) as NostrEvent[]
+  // Use backup data if in backup mode, otherwise use profile data from relay
+  const currentProfileData = isBackupMode ? backupData : profileData;
+  const currentSource = isBackupMode ? backupSource : sourceRelay;
+
+  const selectedEventsArray = currentProfileData
+    ? Object.values(currentProfileData).filter(Boolean).filter(event => selectedEvents.has(event.id)) as NostrEvent[]
     : [];
 
   if (!user) {
@@ -262,20 +286,56 @@ export function ProfileSync() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Source Relay Section */}
         <div className="space-y-6">
-          <RelayInput
-            title="Source Relay"
-            description="The relay to read your current profile data from"
-            placeholder="i.e. wss://relay.damus.io"
-            onRelayChange={handleSourceRelayChange}
-            value={sourceRelay}
-            isConnected={!!profileData}
-            isLoading={isLoadingProfile}
+          {!isBackupMode ? (
+            <RelayInput
+              title="Source Relay"
+              description="The relay to read your current profile data from"
+              placeholder="i.e. wss://relay.damus.io"
+              onRelayChange={handleSourceRelayChange}
+              value={sourceRelay}
+              isConnected={!!profileData && !isManuallyDisconnected}
+              isLoading={isLoadingProfile}
+              onDisconnect={handleSourceRelayDisconnect}
+            />
+          ) : (
+            <Card className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/50">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <FileIcon className="h-6 w-6 text-green-600" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
+                        Backup Mode Active
+                      </h3>
+                      <p className="text-sm text-green-700 dark:text-green-300">
+                        Using data from: {backupSource}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={exitBackupMode}
+                    variant="outline"
+                    size="sm"
+                    className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
+                  >
+                    Use Relay Instead
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Backup Controls */}
+          <BackupControls
+            profileData={currentProfileData}
+            pubkey={user.pubkey}
+            onBackupRestore={enterBackupMode}
           />
 
           {/* Profile Data Display */}
-          {sourceRelay && (
+          {currentSource && (
             <>
-              {profileError && (
+              {profileError && !isBackupMode && (
                 <Alert variant="destructive">
                   <AlertDescription>
                     Failed to load profile data: {profileError instanceof Error ? profileError.message : 'Unknown error'}
@@ -283,10 +343,10 @@ export function ProfileSync() {
                 </Alert>
               )}
 
-              {profileData && (
+              {currentProfileData && (
                 <ProfileDataCard
-                  profileData={profileData}
-                  relayUrl={sourceRelay}
+                  profileData={currentProfileData}
+                  relayUrl={currentSource}
                   onSelectEvents={handleSelectEvents}
                   selectedEvents={selectedEvents}
                 />
@@ -309,7 +369,7 @@ export function ProfileSync() {
 
           {/* Sync Controls */}
           <SyncButton
-            sourceRelay={sourceRelay}
+            sourceRelay={currentSource}
             targetRelay={targetRelay}
             selectedEvents={selectedEventsArray}
             onSync={handleSync}

@@ -17,14 +17,14 @@ export interface ProfileData {
   dmRelays?: NostrEvent;
 }
 
-export function useProfileData(pubkey: string | undefined, relayUrl: string) {
+export function useProfileData(pubkey: string | undefined, relayUrl: string, enabled: boolean = true) {
   const { nostr } = useNostr();
 
   return useQuery({
     queryKey: ['profile-data', pubkey, relayUrl],
     queryFn: async (c) => {
-      if (!pubkey || !relayUrl) {
-        console.log('❌ Missing required params:', { pubkey: !!pubkey, relayUrl: !!relayUrl });
+      // Early return if query should not run (matches enabled condition)
+      if (!pubkey || !relayUrl || !relayUrl.startsWith('wss://')) {
         return null;
       }
 
@@ -156,7 +156,7 @@ export function useProfileData(pubkey: string | undefined, relayUrl: string) {
         throw error;
       }
     },
-    enabled: !!pubkey && !!relayUrl && relayUrl.startsWith('wss://'),
+    enabled: enabled && !!pubkey && !!relayUrl && relayUrl.startsWith('wss://'),
     staleTime: 30000, // Consider data stale after 30 seconds
   });
 }
