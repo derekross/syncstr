@@ -265,7 +265,7 @@ export function ProfileSync() {
           <RelayInput
             title="Source Relay"
             description="The relay to read your current profile data from"
-            placeholder="wss://relay.damus.io"
+            placeholder="i.e. wss://relay.damus.io"
             onRelayChange={handleSourceRelayChange}
             value={sourceRelay}
             isConnected={!!profileData}
@@ -300,7 +300,7 @@ export function ProfileSync() {
           <RelayInput
             title="Target Relay"
             description="The relay to copy your profile data to"
-            placeholder="wss://relay.nostr.band"
+            placeholder="i.e. wss://relay.nostr.band"
             onRelayChange={handleTargetRelayChange}
             value={targetRelay}
             isConnected={getConnectionState(targetRelay).isConnected}
