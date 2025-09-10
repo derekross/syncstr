@@ -1,6 +1,6 @@
 import { useSeoMeta } from '@unhead/react';
 
-// FIXME: Update this page (the content is just a fallback if you fail to update the page)
+// This page is no longer used as the main page - ProfileSync is now the index
 
 const Index = () => {
   useSeoMeta({
