@@ -11,7 +11,7 @@ import { SyncButton } from '@/components/SyncButton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { RotateCcwIcon, UserIcon, InfoIcon } from 'lucide-react';
+import { RotateCcwIcon, UserIcon, InfoIcon, CheckCircleIcon, ZapIcon, ShieldIcon, GlobeIcon } from 'lucide-react';
 import type { NostrEvent } from '@nostrify/nostrify';
 
 export function ProfileSync() {
@@ -78,27 +78,140 @@ export function ProfileSync() {
 
   if (!user) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <div className="text-center space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
-              Nostr Profile Sync
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Hero Section */}
+        <div className="text-center space-y-6 mb-12">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <RotateCcwIcon className="h-10 w-10 text-primary" />
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
+              SyncStr
             </h1>
-            <p className="text-muted-foreground">
-              Synchronize your profile data between Nostr relays
-            </p>
           </div>
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Keep your Nostr profile <span className="font-semibold text-foreground">perfectly synchronized</span> across relays
+          </p>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Your profile data shouldn't be scattered. Sync your complete Nostr identity between relays with just a few clicks.
+          </p>
+        </div>
 
-          <Card className="border-dashed">
-            <CardContent className="py-12 px-8 text-center">
-              <UserIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">Login Required</h3>
-              <p className="text-muted-foreground mb-6">
-                Please log in with your Nostr account to sync your profile data
-              </p>
-              <LoginArea className="max-w-60 mx-auto" />
+        {/* Problem & Solution Section */}
+        <div className="grid md:grid-cols-2 gap-8 mb-12">
+          {/* The Problem */}
+          <Card className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/50">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <GlobeIcon className="h-6 w-6 text-orange-600" />
+                <h2 className="text-xl font-semibold text-orange-900 dark:text-orange-100">The Problem</h2>
+              </div>
+              <div className="space-y-3 text-orange-800 dark:text-orange-200">
+                <p>Your Nostr profile data gets fragmented across relays because:</p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 flex-shrink-0" />
+                    <span>Relays go offline or become unreliable</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 flex-shrink-0" />
+                    <span>Events don't always broadcast to every relay</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 flex-shrink-0" />
+                    <span>Switching relays leaves some events behind</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 flex-shrink-0" />
+                    <span>Some relays only have partial profile data</span>
+                  </li>
+                </ul>
+              </div>
             </CardContent>
           </Card>
+
+          {/* The Solution */}
+          <Card className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/50">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <CheckCircleIcon className="h-6 w-6 text-green-600" />
+                <h2 className="text-xl font-semibold text-green-900 dark:text-green-100">The Solution</h2>
+              </div>
+              <div className="space-y-3 text-green-800 dark:text-green-200">
+                <p>SyncStr copies your complete profile between relays:</p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <CheckCircleIcon className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Profile info, contacts, bookmarks & more</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircleIcon className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Test relay connections before syncing</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircleIcon className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>Choose exactly what data to transfer</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircleIcon className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>You own your identity and your keys</span>
+                  </li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Features Grid */}
+        <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <Card className="text-center p-6">
+            <ZapIcon className="h-12 w-12 mx-auto mb-4 text-purple-600" />
+            <h3 className="text-lg font-semibold mb-2">Lightning Fast</h3>
+            <p className="text-sm text-muted-foreground">
+              Sync your complete profile in seconds. Real-time progress tracking shows you exactly what's happening.
+            </p>
+          </Card>
+          
+          <Card className="text-center p-6">
+            <ShieldIcon className="h-12 w-12 mx-auto mb-4 text-green-600" />
+            <h3 className="text-lg font-semibold mb-2">Private & Secure</h3>
+            <p className="text-sm text-muted-foreground">
+              You own your identity and control your keys. All signing happens locally in your browser.
+            </p>
+          </Card>
+          
+          <Card className="text-center p-6">
+            <GlobeIcon className="h-12 w-12 mx-auto mb-4 text-blue-600" />
+            <h3 className="text-lg font-semibold mb-2">Any Relay</h3>
+            <p className="text-sm text-muted-foreground">
+              Works with any Nostr relay. Popular options include Damus, Primal, Nostr.band, and many more.
+            </p>
+          </Card>
+        </div>
+
+        {/* CTA Section */}
+        <Card className="max-w-2xl mx-auto text-center">
+          <CardContent className="py-12 px-8">
+            <UserIcon className="h-16 w-16 mx-auto mb-6 text-primary" />
+            <h3 className="text-2xl font-semibold mb-4">Ready to Sync Your Profile?</h3>
+            <p className="text-muted-foreground mb-6 text-lg">
+              Connect your Nostr account and start keeping your identity consistent across the decentralized network.
+            </p>
+            <div className="space-y-4">
+              <LoginArea className="max-w-72 mx-auto" />
+              <p className="text-xs text-muted-foreground">
+                Supports browser extensions, private key login, and more
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Footer Info */}
+        <div className="text-center mt-12 pt-8 border-t">
+          <p className="text-sm text-muted-foreground mb-2">
+            Supports all major profile data types: metadata, contacts, bookmarks, communities, interests & more
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Built with ❤️ for the Nostr community • Open source & decentralized
+          </p>
         </div>
       </div>
     );
