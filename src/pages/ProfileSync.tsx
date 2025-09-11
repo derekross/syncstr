@@ -387,14 +387,14 @@ export function ProfileSync() {
                   )}
                 </div>
 
-                {/* Blatsr Quick Option */}
+                {/* Blastr Quick Option */}
                 <div className="p-4 rounded-lg border border-purple-200 bg-purple-50 dark:border-purple-800 dark:bg-purple-950/50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <SatelliteIcon className="h-5 w-5 text-purple-600" />
                       <div>
                         <h4 className="font-medium text-purple-900 dark:text-purple-100">
-                          Use Blatsr Broadcaster
+                          Use Blastr Broadcaster
                         </h4>
                         <p className="text-sm text-purple-700 dark:text-purple-300">
                           Maximize reach by broadcasting to many relays
@@ -410,9 +410,9 @@ export function ProfileSync() {
                         </PopoverTrigger>
                         <PopoverContent className="max-w-xs" side="left">
                           <div className="space-y-2">
-                            <h4 className="font-medium text-sm">About Blatsr Broadcaster</h4>
+                            <h4 className="font-medium text-sm">About Blastr Broadcaster</h4>
                             <p className="text-sm text-muted-foreground">
-                              Blatsr is a broadcaster relay that uses the nostr.watch API to send your events 
+                              Blastr is a broadcaster relay that uses the nostr.watch API to send your events 
                               to as many online relays as possible, drastically improving your reach and discoverability.
                             </p>
                           </div>
@@ -423,7 +423,7 @@ export function ProfileSync() {
                         size="sm"
                         className="bg-purple-600 hover:bg-purple-700 text-white"
                       >
-                        Use Blatsr
+                        Use Blastr
                       </Button>
                     </div>
                   </div>
