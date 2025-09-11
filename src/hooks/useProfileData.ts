@@ -17,7 +17,7 @@ export interface ProfileData {
   dmRelays?: NostrEvent;
 }
 
-export function useProfileData(pubkey: string | undefined, relayUrl: string, enabled: boolean = true) {
+export function useProfileData(pubkey: string | undefined, relayUrl: string) {
   const { nostr } = useNostr();
 
   return useQuery({
@@ -156,7 +156,7 @@ export function useProfileData(pubkey: string | undefined, relayUrl: string, ena
         throw error;
       }
     },
-    enabled: enabled && !!pubkey && !!relayUrl && relayUrl.startsWith('wss://'),
+    enabled: !!pubkey && !!relayUrl && relayUrl.startsWith('wss://'),
     staleTime: 30000, // Consider data stale after 30 seconds
   });
 }

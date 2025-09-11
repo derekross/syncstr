@@ -3,27 +3,43 @@ import { nip19 } from 'nostr-tools';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useProfileData } from '@/hooks/useProfileData';
 import { useSyncProfile } from '@/hooks/useSyncProfile';
-import { useRelayConnection } from '@/hooks/useRelayConnection';
 import { useBackupMode } from '@/hooks/useBackupMode';
 import { LoginArea } from '@/components/auth/LoginArea';
 import { BackupControls } from '@/components/BackupControls';
 import { RelayInput } from '@/components/RelayInput';
 import { ProfileDataCard } from '@/components/ProfileDataCard';
 import { SyncButton } from '@/components/SyncButton';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { RotateCcwIcon, UserIcon, InfoIcon, CheckCircleIcon, ZapIcon, ShieldIcon, GlobeIcon, FileIcon } from 'lucide-react';
+import { RotateCcwIcon, UserIcon, InfoIcon, CheckCircleIcon, ZapIcon, ShieldIcon, GlobeIcon, FileIcon, RadioIcon } from 'lucide-react';
 import type { NostrEvent } from '@nostrify/nostrify';
+
+// Helper function to normalize relay URLs
+const normalizeRelayUrl = (url: string): string => {
+  if (!url) return url;
+  
+  const trimmed = url.trim();
+  if (trimmed.startsWith('wss://') || trimmed.startsWith('ws://')) {
+    return trimmed;
+  }
+  
+  // Auto-add wss:// prefix for domain-like inputs
+  if (trimmed.includes('.') && !trimmed.includes('://')) {
+    return `wss://${trimmed}`;
+  }
+  
+  return trimmed;
+};
 
 export function ProfileSync() {
   const { user } = useCurrentUser();
   const [sourceRelay, setSourceRelay] = useState('');
   const [targetRelay, setTargetRelay] = useState('');
   const [selectedEvents, setSelectedEvents] = useState<Set<string>>(new Set());
-  const [isManuallyDisconnected, setIsManuallyDisconnected] = useState(false);
-  const { testConnection, getConnectionState } = useRelayConnection();
   const { isBackupMode, backupData, backupSource, enterBackupMode, exitBackupMode } = useBackupMode();
 
   const {
@@ -31,7 +47,7 @@ export function ProfileSync() {
     isLoading: isLoadingProfile,
     error: profileError,
     refetch: refetchProfile
-  } = useProfileData(user?.pubkey, sourceRelay, !isManuallyDisconnected);
+  } = useProfileData(user?.pubkey, sourceRelay);
 
   const {
     mutate: syncProfile,
@@ -42,13 +58,6 @@ export function ProfileSync() {
   // Reset selected events when source relay changes
   useEffect(() => {
     setSelectedEvents(new Set());
-  }, [sourceRelay]);
-
-  // Reset manually disconnected state when sourceRelay changes to a valid relay
-  useEffect(() => {
-    if (sourceRelay && sourceRelay.startsWith('wss://')) {
-      setIsManuallyDisconnected(false);
-    }
   }, [sourceRelay]);
 
   const handleSelectEvents = (events: NostrEvent[]) => {
@@ -69,8 +78,8 @@ export function ProfileSync() {
   };
 
   const handleSourceRelayChange = (relay: string) => {
-    setSourceRelay(relay);
-    setIsManuallyDisconnected(false); // Reset disconnect state when connecting to new relay
+    const normalizedRelay = normalizeRelayUrl(relay);
+    setSourceRelay(normalizedRelay);
     // Trigger a refetch when the relay changes
     if (user?.pubkey) {
       refetchProfile();
@@ -78,19 +87,11 @@ export function ProfileSync() {
   };
 
   const handleSourceRelayDisconnect = () => {
-    // Set manually disconnected flag and clear state
-    setIsManuallyDisconnected(true);
-    setSourceRelay('');
-    setSelectedEvents(new Set());
+    // Simple and effective: reload the page to reset all state
+    window.location.reload();
   };
 
-  const handleTargetRelayChange = async (relay: string) => {
-    setTargetRelay(relay);
-    // Test the connection to the target relay
-    if (relay) {
-      await testConnection(relay);
-    }
-  };
+  // Target relay change handler is no longer needed since we use direct onChange
 
   // Use backup data if in backup mode, otherwise use profile data from relay
   const currentProfileData = isBackupMode ? backupData : profileData;
@@ -289,11 +290,11 @@ export function ProfileSync() {
           {!isBackupMode ? (
             <RelayInput
               title="Source Relay"
-              description="The relay to read your current profile data from"
-              placeholder="i.e. wss://relay.damus.io"
+              description="The relay to read your current profile data from (wss:// will be added automatically)"
+              placeholder="i.e. relay.damus.io"
               onRelayChange={handleSourceRelayChange}
               value={sourceRelay}
-              isConnected={!!profileData && !isManuallyDisconnected}
+              isConnected={!!profileData}
               isLoading={isLoadingProfile}
               onDisconnect={handleSourceRelayDisconnect}
             />
@@ -357,15 +358,34 @@ export function ProfileSync() {
 
         {/* Target Relay Section */}
         <div className="space-y-6">
-          <RelayInput
-            title="Target Relay"
-            description="The relay to copy your profile data to"
-            placeholder="i.e. wss://relay.nostr.band"
-            onRelayChange={handleTargetRelayChange}
-            value={targetRelay}
-            isConnected={getConnectionState(targetRelay).isConnected}
-            isLoading={getConnectionState(targetRelay).isLoading}
-          />
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <RadioIcon className="h-5 w-5 text-primary" />
+                <CardTitle className="text-lg">Target Relay</CardTitle>
+              </div>
+              <CardDescription>The relay to copy your profile data to (wss:// will be added automatically)</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Label htmlFor="target-relay-input">Relay URL</Label>
+                <Input
+                  id="target-relay-input"
+                  type="text"
+                  placeholder="i.e. relay.nostr.band"
+                  value={targetRelay}
+                  onChange={(e) => setTargetRelay(e.target.value)}
+                  onBlur={(e) => setTargetRelay(normalizeRelayUrl(e.target.value))}
+                  className="w-full"
+                />
+                {targetRelay && (
+                  <div className="p-3 bg-muted rounded-lg">
+                    <p className="text-sm font-mono break-all">{targetRelay}</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Sync Controls */}
           <SyncButton

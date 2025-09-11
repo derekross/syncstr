@@ -83,7 +83,7 @@ export function RelayInput({
             <div className="flex gap-2">
               <Input
                 id="relay-input"
-                type="url"
+                type="text"
                 placeholder={placeholder}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
