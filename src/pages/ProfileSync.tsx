@@ -15,7 +15,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { RotateCcwIcon, UserIcon, InfoIcon, CheckCircleIcon, ZapIcon, ShieldIcon, GlobeIcon, FileIcon, RadioIcon } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { RotateCcwIcon, UserIcon, InfoIcon, CheckCircleIcon, ZapIcon, ShieldIcon, GlobeIcon, FileIcon, RadioIcon, SatelliteIcon } from 'lucide-react';
 import type { NostrEvent } from '@nostrify/nostrify';
 
 // Helper function to normalize relay URLs
@@ -367,22 +368,66 @@ export function ProfileSync() {
               <CardDescription>The relay to copy your profile data to (wss:// will be added automatically)</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                <Label htmlFor="target-relay-input">Relay URL</Label>
-                <Input
-                  id="target-relay-input"
-                  type="text"
-                  placeholder="i.e. relay.nostr.band"
-                  value={targetRelay}
-                  onChange={(e) => setTargetRelay(e.target.value)}
-                  onBlur={(e) => setTargetRelay(normalizeRelayUrl(e.target.value))}
-                  className="w-full"
-                />
-                {targetRelay && (
-                  <div className="p-3 bg-muted rounded-lg">
-                    <p className="text-sm font-mono break-all">{targetRelay}</p>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="target-relay-input">Relay URL</Label>
+                  <Input
+                    id="target-relay-input"
+                    type="text"
+                    placeholder="i.e. relay.nostr.band"
+                    value={targetRelay}
+                    onChange={(e) => setTargetRelay(e.target.value)}
+                    onBlur={(e) => setTargetRelay(normalizeRelayUrl(e.target.value))}
+                    className="w-full"
+                  />
+                  {targetRelay && (
+                    <div className="p-3 bg-muted rounded-lg">
+                      <p className="text-sm font-mono break-all">{targetRelay}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Blatsr Quick Option */}
+                <div className="p-4 rounded-lg border border-purple-200 bg-purple-50 dark:border-purple-800 dark:bg-purple-950/50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <SatelliteIcon className="h-5 w-5 text-purple-600" />
+                      <div>
+                        <h4 className="font-medium text-purple-900 dark:text-purple-100">
+                          Use Blatsr Broadcaster
+                        </h4>
+                        <p className="text-sm text-purple-700 dark:text-purple-300">
+                          Maximize reach by broadcasting to many relays
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <InfoIcon className="h-4 w-4 text-purple-600" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="max-w-xs" side="left">
+                          <div className="space-y-2">
+                            <h4 className="font-medium text-sm">About Blatsr Broadcaster</h4>
+                            <p className="text-sm text-muted-foreground">
+                              Blatsr is a broadcaster relay that uses the nostr.watch API to send your events 
+                              to as many online relays as possible, drastically improving your reach and discoverability.
+                            </p>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                      <Button
+                        onClick={() => setTargetRelay('wss://sendit.nosflare.com')}
+                        size="sm"
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                      >
+                        Use Blatsr
+                      </Button>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             </CardContent>
           </Card>
