@@ -15,6 +15,11 @@ export interface ProfileData {
   emojiList?: NostrEvent;
   searchRelays?: NostrEvent;
   dmRelays?: NostrEvent;
+  blockedRelays?: NostrEvent;
+  indexerRelays?: NostrEvent;
+  proxyRelays?: NostrEvent;
+  broadcastRelays?: NostrEvent;
+  trustedRelays?: NostrEvent;
 }
 
 export function useProfileData(pubkey: string | undefined, relayUrl: string) {
@@ -39,10 +44,10 @@ export function useProfileData(pubkey: string | undefined, relayUrl: string) {
         if (testEvents.length > 0) {
           // If the global instance works, use it for all queries
           const allEvents = await nostr.query(
-            [{ 
-              kinds: [0, 3, 10000, 10001, 10002, 10003, 10004, 10007, 10015, 10030, 10050], 
-              authors: [pubkey], 
-              limit: 50 
+            [{
+              kinds: [0, 3, 10000, 10001, 10002, 10003, 10004, 10006, 10007, 10015, 10030, 10050, 10086, 10087, 10088, 10089],
+              authors: [pubkey],
+              limit: 50
             }],
             { signal }
           );
@@ -72,6 +77,9 @@ export function useProfileData(pubkey: string | undefined, relayUrl: string) {
               case 10004:
                 profileData.communities = event;
                 break;
+              case 10006:
+                profileData.blockedRelays = event;
+                break;
               case 10007:
                 profileData.searchRelays = event;
                 break;
@@ -84,9 +92,21 @@ export function useProfileData(pubkey: string | undefined, relayUrl: string) {
               case 10050:
                 profileData.dmRelays = event;
                 break;
+              case 10086:
+                profileData.indexerRelays = event;
+                break;
+              case 10087:
+                profileData.proxyRelays = event;
+                break;
+              case 10088:
+                profileData.broadcastRelays = event;
+                break;
+              case 10089:
+                profileData.trustedRelays = event;
+                break;
             }
           }
-          
+
           return profileData;
         }
 
@@ -105,7 +125,7 @@ export function useProfileData(pubkey: string | undefined, relayUrl: string) {
         });
 
         const events = await customPool.query(
-          [{ kinds: [0, 3, 10000, 10001, 10002, 10003, 10004, 10007, 10015, 10030, 10050], authors: [pubkey], limit: 50 }],
+          [{ kinds: [0, 3, 10000, 10001, 10002, 10003, 10004, 10006, 10007, 10015, 10030, 10050, 10086, 10087, 10088, 10089], authors: [pubkey], limit: 50 }],
           { signal }
         );
 
@@ -135,6 +155,9 @@ export function useProfileData(pubkey: string | undefined, relayUrl: string) {
             case 10004:
               profileData.communities = event;
               break;
+            case 10006:
+              profileData.blockedRelays = event;
+              break;
             case 10007:
               profileData.searchRelays = event;
               break;
@@ -146,6 +169,18 @@ export function useProfileData(pubkey: string | undefined, relayUrl: string) {
               break;
             case 10050:
               profileData.dmRelays = event;
+              break;
+            case 10086:
+              profileData.indexerRelays = event;
+              break;
+            case 10087:
+              profileData.proxyRelays = event;
+              break;
+            case 10088:
+              profileData.broadcastRelays = event;
+              break;
+            case 10089:
+              profileData.trustedRelays = event;
               break;
           }
         }

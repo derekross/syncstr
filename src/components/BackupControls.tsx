@@ -45,29 +45,29 @@ export function BackupControls({ profileData, pubkey, onBackupRestore }: BackupC
   const hasData = availableEvents.length > 0;
 
   return (
-    <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/50">
+    <Card className="border-blue-500/30 bg-blue-500/10">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <ShieldCheckIcon className="h-6 w-6 text-blue-600" />
+          <ShieldCheckIcon className="h-6 w-6 text-blue-400" />
           <div>
-            <CardTitle className="text-lg text-blue-900 dark:text-blue-100">
+            <CardTitle className="text-lg text-white">
               Backup & Restore
             </CardTitle>
-            <CardDescription className="text-blue-700 dark:text-blue-300">
+            <CardDescription className="text-white/60">
               Download your profile data for safekeeping or restore from a backup
             </CardDescription>
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {/* Download Backup */}
-        <div className="flex items-center justify-between p-4 rounded-lg border border-blue-200 dark:border-blue-700">
+        <div className="flex items-center justify-between p-4 rounded-lg border border-blue-500/20 bg-blue-500/5">
           <div className="flex items-center gap-3">
-            <DownloadIcon className="h-5 w-5 text-blue-600" />
+            <DownloadIcon className="h-5 w-5 text-blue-400" />
             <div>
-              <h4 className="font-medium text-blue-900 dark:text-blue-100">Download Backup</h4>
-              <p className="text-sm text-blue-700 dark:text-blue-300">
+              <h4 className="font-medium text-white">Download Backup</h4>
+              <p className="text-sm text-white/60">
                 {hasData ? `Save ${availableEvents.length} profile events as JSON` : 'No profile data to backup'}
               </p>
             </div>
@@ -82,15 +82,15 @@ export function BackupControls({ profileData, pubkey, onBackupRestore }: BackupC
           </Button>
         </div>
 
-        <Separator className="bg-blue-200 dark:bg-blue-700" />
+        <Separator className="bg-blue-500/20" />
 
         {/* Upload Backup */}
-        <div className="flex items-center justify-between p-4 rounded-lg border border-blue-200 dark:border-blue-700">
+        <div className="flex items-center justify-between p-4 rounded-lg border border-blue-500/20 bg-blue-500/5">
           <div className="flex items-center gap-3">
-            <UploadIcon className="h-5 w-5 text-blue-600" />
+            <UploadIcon className="h-5 w-5 text-blue-400" />
             <div>
-              <h4 className="font-medium text-blue-900 dark:text-blue-100">Restore from Backup</h4>
-              <p className="text-sm text-blue-700 dark:text-blue-300">
+              <h4 className="font-medium text-white">Restore from Backup</h4>
+              <p className="text-sm text-white/60">
                 Load profile data from a previously downloaded backup file
               </p>
             </div>
@@ -100,7 +100,7 @@ export function BackupControls({ profileData, pubkey, onBackupRestore }: BackupC
             disabled={isRestoringBackup}
             size="sm"
             variant="outline"
-            className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+            className="border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
           >
             {isRestoringBackup ? 'Loading...' : 'Upload'}
           </Button>
@@ -116,11 +116,11 @@ export function BackupControls({ profileData, pubkey, onBackupRestore }: BackupC
         />
 
         {/* Info Section */}
-        <div className="mt-4 p-3 rounded-lg bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700">
+        <div className="mt-4 p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
           <div className="flex items-start gap-2">
-            <FileIcon className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-            <div className="text-xs text-blue-800 dark:text-blue-200">
-              <p className="font-medium mb-1">Backup Features:</p>
+            <FileIcon className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
+            <div className="text-xs text-white/60">
+              <p className="font-medium mb-1 text-white/80">Backup Features:</p>
               <ul className="space-y-0.5">
                 <li>• Complete offline backup of all profile data</li>
                 <li>• Use backups to sync to new relays without connecting to source</li>

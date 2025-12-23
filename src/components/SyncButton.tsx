@@ -33,37 +33,37 @@ export function SyncButton({
   };
 
   return (
-    <Card>
+    <Card className="border-white/10 bg-white/5">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <RotateCcwIcon className="h-5 w-5 text-primary" />
-          <CardTitle className="text-lg">Sync Profile Data</CardTitle>
+          <RotateCcwIcon className="h-5 w-5 text-violet-400" />
+          <CardTitle className="text-lg text-white">Sync Profile Data</CardTitle>
         </div>
-        <CardDescription>
+        <CardDescription className="text-white/60">
           Copy selected profile data from source to target relay
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Relay Flow Visualization */}
-        <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+        <div className="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-lg">
           <div className="flex-1 text-center">
-            <p className="text-sm font-medium">Source</p>
-            <p className="text-xs text-muted-foreground font-mono break-all">
+            <p className="text-sm font-medium text-white">Source</p>
+            <p className="text-xs text-white/60 font-mono break-all">
               {sourceRelay || 'Not selected'}
             </p>
           </div>
-          <ArrowRightIcon className="h-6 w-6 text-primary flex-shrink-0" />
+          <ArrowRightIcon className="h-6 w-6 text-violet-400 flex-shrink-0" />
           <div className="flex-1 text-center">
-            <p className="text-sm font-medium">Target</p>
-            <p className="text-xs text-muted-foreground font-mono break-all">
+            <p className="text-sm font-medium text-white">Target</p>
+            <p className="text-xs text-white/60 font-mono break-all">
               {targetRelay || 'Not selected'}
             </p>
           </div>
         </div>
 
         {/* Selected Events Summary */}
-        <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
-          <p className="text-sm font-medium text-primary">
+        <div className="p-3 bg-violet-500/10 border border-violet-500/30 rounded-lg">
+          <p className="text-sm font-medium text-violet-400">
             {selectedEvents.length} events selected for sync
           </p>
           {selectedEvents.length > 0 && (
@@ -71,7 +71,7 @@ export function SyncButton({
               {selectedEvents.map((event) => (
                 <span
                   key={event.id}
-                  className="inline-flex items-center px-2 py-1 bg-primary/10 text-primary text-xs rounded"
+                  className="inline-flex items-center px-2 py-1 bg-violet-500/20 text-violet-400 text-xs rounded"
                 >
                   Kind {event.kind}
                 </span>
@@ -83,7 +83,7 @@ export function SyncButton({
         {/* Progress Bar (shown during sync) */}
         {isLoading && (
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center justify-between text-sm text-white/80">
               <span>Syncing events...</span>
               {syncResult && (
                 <span>{syncResult.successCount + syncResult.errorCount}/{syncResult.total}</span>
@@ -98,18 +98,18 @@ export function SyncButton({
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               {syncResult.errorCount === 0 ? (
-                <CheckIcon className="h-4 w-4 text-green-600" />
+                <CheckIcon className="h-4 w-4 text-emerald-400" />
               ) : (
-                <XIcon className="h-4 w-4 text-red-600" />
+                <XIcon className="h-4 w-4 text-red-400" />
               )}
-              <span className="text-sm font-medium">
+              <span className="text-sm font-medium text-white">
                 Sync {syncResult.errorCount === 0 ? 'Complete' : 'Partial'}
               </span>
             </div>
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p>✅ {syncResult.successCount} events synced successfully</p>
+            <div className="text-xs text-white/60 space-y-1">
+              <p>{syncResult.successCount} events synced successfully</p>
               {syncResult.errorCount > 0 && (
-                <p>❌ {syncResult.errorCount} events failed to sync</p>
+                <p className="text-red-400">{syncResult.errorCount} events failed to sync</p>
               )}
             </div>
           </div>
@@ -119,7 +119,7 @@ export function SyncButton({
         <Button
           onClick={onSync}
           disabled={!canSync}
-          className="w-full"
+          className="w-full bg-violet-600 hover:bg-violet-700 text-white"
           size="lg"
         >
           {isLoading ? (
@@ -136,7 +136,7 @@ export function SyncButton({
         </Button>
 
         {!canSync && !isLoading && (
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-xs text-white/40 text-center">
             {!sourceRelay && 'Select a source relay, '}
             {!targetRelay && 'select a target relay, '}
             {selectedEvents.length === 0 && 'select events to sync'}
