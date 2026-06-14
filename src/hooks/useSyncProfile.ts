@@ -10,6 +10,30 @@ export interface SyncProfileData {
   targetRelay: string;
 }
 
+// Common Nostr event kinds mapping for readable logs
+const KIND_NAMES: Record<number, string> = {
+  0: 'User Metadata',
+  1: 'Short Text Note',
+  2: 'Recommendation',
+  3: 'Contact List',
+  4: 'Encrypted Direct Message',
+  6: 'Repost',
+  7: 'Reaction',
+  9: 'Event Deletion Request',
+  16: 'Generic Repost',
+  1111: 'Comment',
+  10000: 'Mute List',
+  10001: 'Pin List',
+  10002: 'Relay List Metadata',
+  10005: 'Bookmark List',
+  10007: 'Relay Sets List',
+  10015: 'Interest List',
+  10050: 'DM Relays',
+  10063: 'Blossom Server List',
+  10086: 'User Statuses',
+  22242: 'Relay Auth',
+};
+
 export function useSyncProfile() {
   const { toast } = useToast();
   const { config } = useAppContext();
@@ -76,10 +100,30 @@ export function useSyncProfile() {
         let usedRelay = '';
 
         // Determine a readable description for the event log
-        const altTag = event.tags.find(t => t[0] === 'alt')?.[1];
-        const contentSnippet = event.content.trim().slice(0, 40).replace(/\n/g, ' ') + (event.content.trim().length > 40 ? '...' : '');
-        const description = altTag || (contentSnippet ? `"${contentSnippet}"` : '');
-        const eventLabel = description ? `${description} => Kind ${event.kind}` : `Kind ${event.kind}`;
+        let description = '';
+        
+        if (event.kind === 0) {
+          try {
+            const metadata = JSON.parse(event.content);
+            if (metadata.display_name || metadata.name) {
+              description = metadata.display_name || metadata.name;
+            }
+          } catch {
+            // ignore JSON parsing errors
+          }
+        }
+
+        if (!description) {
+          description = event.tags.find(t => t[0] === 'alt')?.[1] || '';
+        }
+
+        if (!description && event.content.trim()) {
+          const snippet = event.content.trim().slice(0, 40).replace(/\n/g, ' ');
+          description = snippet + (event.content.trim().length > 40 ? '...' : '');
+        }
+
+        const kindName = KIND_NAMES[event.kind] || `Kind ${event.kind}`;
+        const eventLabel = description ? `"${description}" => ${kindName}` : kindName;
 
         // 1. Try target relay first
         try {
