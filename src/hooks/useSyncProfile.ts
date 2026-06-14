@@ -23,6 +23,10 @@ export function useSyncProfile() {
         throw new Error('No events to sync');
       }
 
+      if (!user) {
+        throw new Error('User must be logged in to sync profile');
+      }
+
       if (!targetRelay || (!targetRelay.startsWith('wss://') && !targetRelay.startsWith('ws://'))) {
         throw new Error('Invalid target relay URL');
       }
@@ -63,7 +67,10 @@ export function useSyncProfile() {
         });
       };
 
-      for (const event of events) {
+      const targetPool = createPool(targetRelay);
+      const fallbackPool = config.relayUrl !== targetRelay ? createPool(config.relayUrl) : null;
+
+      const publishPromises = events.map(async (event) => {
         let eventSuccess = false;
         let eventError: unknown = null;
         let usedRelay = '';
@@ -71,7 +78,6 @@ export function useSyncProfile() {
         // 1. Try target relay first
         try {
           console.log(`📤 Publishing event ${event.kind} (${event.id.slice(0, 8)}...) to TARGET relay: ${targetRelay}`);
-          const targetPool = createPool(targetRelay);
           await targetPool.event(event, { signal: AbortSignal.timeout(15000) });
           console.log(`✅ Successfully published event ${event.kind} to TARGET relay: ${targetRelay}`);
           eventSuccess = true;
@@ -80,10 +86,9 @@ export function useSyncProfile() {
           console.warn(`⚠️ TARGET relay failed for event ${event.kind} (${targetRelay}):`, targetError);
           
           // 2. Fallback to default relay if different from target
-          if (config.relayUrl !== targetRelay) {
+          if (fallbackPool) {
             try {
               console.log(`🔄 Falling back to DEFAULT relay for event ${event.kind}: ${config.relayUrl}`);
-              const fallbackPool = createPool(config.relayUrl);
               await fallbackPool.event(event, { signal: AbortSignal.timeout(15000) });
               console.log(`✅ Successfully published event ${event.kind} to DEFAULT relay: ${config.relayUrl}`);
               eventSuccess = true;
@@ -97,13 +102,24 @@ export function useSyncProfile() {
           }
         }
 
-        if (eventSuccess) {
-          successCount++;
+        return { event, success: eventSuccess, usedRelay, error: eventError };
+      });
+
+      const settledResults = await Promise.allSettled(publishPromises);
+
+      for (const result of settledResults) {
+        if (result.status === 'fulfilled') {
+          const res = result.value;
+          if (res.success) {
+            successCount++;
+          } else {
+            errorCount++;
+          }
+          results.push(res);
         } else {
           errorCount++;
+          console.error('Unexpected promise rejection during event publishing:', result.reason);
         }
-
-        results.push({ event, success: eventSuccess, usedRelay, error: eventError });
       }
 
       console.log('📊 Sync results:', { successCount, errorCount, total: events.length });

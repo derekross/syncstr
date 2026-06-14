@@ -171,9 +171,9 @@ describe('useSyncProfile', () => {
     });
 
     const mockEventResult = vi.fn().mockResolvedValue(undefined);
-    (Nostrify.NPool as any).mockImplementation((opts: any) => {
-      if (opts.open) {
-        opts.open('wss://target.relay.test');
+    (Nostrify.NPool as any).mockImplementation((_opts: any) => {
+      if (_opts.open) {
+        _opts.open('wss://target.relay.test');
       }
       return { event: mockEventResult };
     });
