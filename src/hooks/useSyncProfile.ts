@@ -75,29 +75,32 @@ export function useSyncProfile() {
         let eventError: unknown = null;
         let usedRelay = '';
 
-        const eventDesc = event.tags.find(t => t[0] === 'alt')?.[1] || 
-          (event.content.trim() ? event.content.slice(0, 40) + (event.content.length > 40 ? '...' : '') : 'No description');
+        // Determine a readable description for the event log
+        const altTag = event.tags.find(t => t[0] === 'alt')?.[1];
+        const contentSnippet = event.content.trim().slice(0, 40).replace(/\n/g, ' ') + (event.content.trim().length > 40 ? '...' : '');
+        const description = altTag || (contentSnippet ? `"${contentSnippet}"` : '');
+        const eventLabel = description ? `${description} => Kind ${event.kind}` : `Kind ${event.kind}`;
 
         // 1. Try target relay first
         try {
-          console.log(`📤 Publishing event ${event.kind} (${event.id.slice(0, 8)}..., "${eventDesc}") to TARGET relay: ${targetRelay}`);
+          console.log(`📤 Publishing ${eventLabel} (${event.id.slice(0, 8)}...) to TARGET relay: ${targetRelay}`);
           await targetPool.event(event, { signal: AbortSignal.timeout(15000) });
-          console.log(`✅ Successfully published event ${event.kind} ("${eventDesc}") to TARGET relay: ${targetRelay}`);
+          console.log(`✅ Successfully published ${eventLabel} (${event.id.slice(0, 8)}...) to TARGET relay: ${targetRelay}`);
           eventSuccess = true;
           usedRelay = targetRelay;
         } catch (targetError) {
-          console.warn(`⚠️ TARGET relay failed for event ${event.kind} (${event.id.slice(0, 8)}..., "${eventDesc}") (${targetRelay}):`, targetError);
+          console.warn(`⚠️ TARGET relay failed for ${eventLabel} (${event.id.slice(0, 8)}...) (${targetRelay}):`, targetError);
           
           // 2. Fallback to default relay if different from target
           if (fallbackPool) {
             try {
-              console.log(`🔄 Falling back to DEFAULT relay for event ${event.kind} ("${eventDesc}"): ${config.relayUrl}`);
+              console.log(`🔄 Falling back to DEFAULT relay for ${eventLabel}: ${config.relayUrl}`);
               await fallbackPool.event(event, { signal: AbortSignal.timeout(15000) });
-              console.log(`✅ Successfully published event ${event.kind} ("${eventDesc}") to DEFAULT relay: ${config.relayUrl}`);
+              console.log(`✅ Successfully published ${eventLabel} to DEFAULT relay: ${config.relayUrl}`);
               eventSuccess = true;
               usedRelay = config.relayUrl;
             } catch (fallbackError) {
-              console.error(`❌ Both TARGET (${targetRelay}) and DEFAULT (${config.relayUrl}) relays failed for event ${event.kind} ("${eventDesc}"):`, { targetError, fallbackError });
+              console.error(`❌ Both TARGET (${targetRelay}) and DEFAULT (${config.relayUrl}) relays failed for ${eventLabel}:`, { targetError, fallbackError });
               eventError = fallbackError;
             }
           } else {
