@@ -221,7 +221,7 @@ export function ProfileSync() {
           <div className="p-6 rounded-2xl border border-white/10 bg-white/5 mb-16">
             <h3 className="text-lg font-semibold text-white mb-4 text-center">What can you sync?</h3>
             <div className="flex flex-wrap justify-center gap-2">
-              {['Profile', 'Contacts', 'Bookmarks', 'Relay Lists', 'Mute Lists', 'Communities', 'Interests', 'Emojis', 'DM Relays', 'Search Relays'].map((item) => (
+              {['Profile', 'Contacts', 'Bookmarks', 'Relay Lists', 'Mute Lists', 'Communities', 'Interests', 'Emojis', 'DM Relays', 'Search Relays', 'Blossom Servers'].map((item) => (
                 <span key={item} className="px-3 py-1.5 rounded-full bg-violet-500/20 border border-violet-500/30 text-violet-400 text-sm">
                   {item}
                 </span>
@@ -298,7 +298,7 @@ export function ProfileSync() {
             This tool syncs profile metadata (kind 0), contact lists (kind 3), mute lists (kind 10000),
             pinned notes (kind 10001), relay lists (kind 10002), bookmarks (kind 10003), communities
             (kind 10004), search relays (kind 10007), interests (kind 10015), emoji lists (kind 10030),
-            and DM relays (kind 10050) between relays.
+            DM relays (kind 10050), and Blossom server lists (kind 10063) between relays.
           </AlertDescription>
         </Alert>
 

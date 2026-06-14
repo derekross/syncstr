@@ -16,6 +16,7 @@ export interface ProfileData {
   searchRelays?: NostrEvent;
   dmRelays?: NostrEvent;
   blockedRelays?: NostrEvent;
+  blossomServers?: NostrEvent;
   indexerRelays?: NostrEvent;
   proxyRelays?: NostrEvent;
   broadcastRelays?: NostrEvent;
@@ -45,7 +46,7 @@ export function useProfileData(pubkey: string | undefined, relayUrl: string) {
           // If the global instance works, use it for all queries
           const allEvents = await nostr.query(
             [{
-              kinds: [0, 3, 10000, 10001, 10002, 10003, 10004, 10006, 10007, 10015, 10030, 10050, 10086, 10087, 10088, 10089],
+              kinds: [0, 3, 10000, 10001, 10002, 10003, 10004, 10006, 10007, 10015, 10030, 10050, 10063, 10086, 10087, 10088, 10089],
               authors: [pubkey],
               limit: 50
             }],
@@ -92,6 +93,9 @@ export function useProfileData(pubkey: string | undefined, relayUrl: string) {
               case 10050:
                 profileData.dmRelays = event;
                 break;
+              case 10063:
+                profileData.blossomServers = event;
+                break;
               case 10086:
                 profileData.indexerRelays = event;
                 break;
@@ -125,7 +129,7 @@ export function useProfileData(pubkey: string | undefined, relayUrl: string) {
         });
 
         const events = await customPool.query(
-          [{ kinds: [0, 3, 10000, 10001, 10002, 10003, 10004, 10006, 10007, 10015, 10030, 10050, 10086, 10087, 10088, 10089], authors: [pubkey], limit: 50 }],
+          [{ kinds: [0, 3, 10000, 10001, 10002, 10003, 10004, 10006, 10007, 10015, 10030, 10050, 10063, 10086, 10087, 10088, 10089], authors: [pubkey], limit: 50 }],
           { signal }
         );
 
@@ -169,6 +173,9 @@ export function useProfileData(pubkey: string | undefined, relayUrl: string) {
               break;
             case 10050:
               profileData.dmRelays = event;
+              break;
+            case 10063:
+              profileData.blossomServers = event;
               break;
             case 10086:
               profileData.indexerRelays = event;
