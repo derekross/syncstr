@@ -6,7 +6,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Shield, Upload, AlertTriangle, UserPlus, KeyRound, Sparkles, Link, Loader2, Copy, Check, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useLoginActions, generateNostrConnectParams, generateNostrConnectURI, NostrConnectParams } from '@/hooks/useLoginActions';
@@ -266,7 +266,9 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ isOpen, onClose, onLogin, onS
         className={cn("max-w-[95vw] sm:max-w-md max-h-[90vh] max-h-[90dvh] p-0 overflow-hidden rounded-2xl overflow-y-scroll")}
       >
         <DialogHeader className={cn('px-6 pt-6 pb-1 relative')}>
-
+            <DialogTitle className="sr-only">
+              Sign In or Sign Up
+            </DialogTitle>
             <DialogDescription className="text-center">
               Sign up or log in to continue
             </DialogDescription>
