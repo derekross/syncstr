@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { CalendarIcon, UserIcon, TagIcon, BookmarkIcon, RadioIcon, PinIcon, Users2Icon, HashIcon, SmileIcon, SearchIcon, MessageCircleIcon, BanIcon, DatabaseIcon, Share2Icon, ShieldCheckIcon } from 'lucide-react';
+import { CalendarIcon, UserIcon, TagIcon, BookmarkIcon, RadioIcon, PinIcon, Users2Icon, HashIcon, SmileIcon, SearchIcon, MessageCircleIcon, BanIcon, DatabaseIcon, Share2Icon, ShieldCheckIcon, ServerIcon } from 'lucide-react';
 import type { NostrEvent, NostrMetadata } from '@nostrify/nostrify';
 import type { ProfileData } from '@/hooks/useProfileData';
 
@@ -63,6 +63,8 @@ export function ProfileDataCard({ profileData, relayUrl, onSelectEvents, selecte
         return { name: 'Emoji List', icon: SmileIcon, color: 'bg-pink-500/20 border-pink-500/30 text-pink-400' };
       case 10050:
         return { name: 'DM Relays', icon: MessageCircleIcon, color: 'bg-violet-500/20 border-violet-500/30 text-violet-400' };
+      case 10063:
+        return { name: 'Blossom Servers', icon: ServerIcon, color: 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' };
       case 10086:
         return { name: 'Indexer Relays', icon: DatabaseIcon, color: 'bg-blue-500/20 border-blue-500/30 text-blue-400' };
       case 10087:
@@ -117,6 +119,9 @@ export function ProfileDataCard({ profileData, relayUrl, onSelectEvents, selecte
     } else if (event.kind === 10050) {
       const dmRelayTags = event.tags.filter(tag => tag[0] === 'relay');
       details = `${dmRelayTags.length} DM relays`;
+    } else if (event.kind === 10063) {
+      const serverTags = event.tags.filter(tag => tag[0] === 'server');
+      details = `${serverTags.length} Blossom server${serverTags.length !== 1 ? 's' : ''}`;
     } else if (event.kind === 10006) {
       const blockedRelayTags = event.tags.filter(tag => tag[0] === 'relay');
       details = `${blockedRelayTags.length} blocked relays`;
